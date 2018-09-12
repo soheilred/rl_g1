@@ -1,7 +1,7 @@
 # @Author: soheil
 # @Date:   2018-09-11 11:47:34
 # @Last Modified by:   soheilred
-# @Last Modified time: 2018-09-12 10:52:32
+# @Last Modified time: 2018-09-12 14:58:54
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
@@ -31,10 +31,10 @@ def valueIteration(S, A, P, R, gamma):
 		
 		twodecimals = ["%.2f" % var for var in v2]
 		print (twodecimals)
-		print (i , ',', twodecimals)
+		print (i , '->', twodecimals)
 		print (np.linalg.norm(v2 - v1) )
 		print (optimalAction)
-		return optimalAction
+	return optimalAction
 
 
 def main():
