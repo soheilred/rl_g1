@@ -20,9 +20,36 @@ def main():
     #     fileName = input("Enter Filename: ")
     fileName = 'input.csv'
     df = pd.read_csv(fileName)
-    print (df.head())
+    gamma = 0.9
+    actions = set()
+    states = set()
+    for i in range(df.shape[0]):
+    	states.add(df.at[i,'idstatefrom'])
+    	states.add(df.at[i,'idstateto'])
+    	actions.add(df.at[i,'idaction'])
+
+    P = np.empty([len(states), len(states), len(actions)])
+    R = np.empty([len(states), len(states), len(actions)])
+    # print(P.shape)
+
+    for i in range(df.shape[0]):
+    	P[df.at[i, 'idstatefrom'], df.at[i,'idstateto'], df.at[i,'idaction']] = df.at[i,'probability']
+    	R[df.at[i, 'idstatefrom'], df.at[i,'idstateto'], df.at[i,'idaction']] = df.at[i,'reward']
+    
+    v = np.zeros([len(states)])
+    for s in states:
+		Q = np.zeros(len(actions))
+		for a in actions:
+			Q[a] = 0
+			for sp in states:
+				Q[a] = Q[a] + P[s, sp, a] * ( R[s, sp, a] + gamma*v[sp] )
+		v[s] = np.max(Q)
+    
+    print (v)
+
+    # print (df.head())
     df.to_csv('out.csv')
 
 
 if __name__ == "__main__": main()
-# PROJECT_PATH = os.path.abspath(os.path.split(sys.argv[0])[0])
+# dist = numpy.linalg.norm(a-b)
