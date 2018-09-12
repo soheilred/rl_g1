@@ -25,7 +25,7 @@ def valueIteration(S, A, P, R, gamma):
 				Q[a] = 0
 				for sp in S:
 					Q[a] = Q[a] + P[s, sp, a] * ( R[s, sp, a] + gamma*v1[sp] )
-				print ('Q[a =',a ,',s =', s,'] =',Q[a])
+				print ('Q[a,s]=(',a, s,')=',Q[a])
 			v2[s] = np.max(Q)
 			optimalAction[s] = np.argmax(Q)
 		
