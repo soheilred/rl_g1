@@ -25,15 +25,16 @@ def valueIteration(S, A, P, R, gamma):
 				Q[a] = 0
 				for sp in S:
 					Q[a] = Q[a] + P[s, sp, a] * ( R[s, sp, a] + gamma*v1[sp] )
-				print ('Q[a,s]=(',a, s,')=',Q[a])
+				print ('Q[a =',a ,',s =', s,'] =',"%.2f" % Q[a])
 			v2[s] = np.max(Q)
 			optimalAction[s] = np.argmax(Q)
 		
-		# twodecimals = ["%.2f" % var for var in V[len(V) - 1]]
-		# print (twodecimals)
-		print (i , ',', v2)
-		print (np.linalg.norm(v2 - v1))
+		twodecimals = ["%.2f" % var for var in v2]
+		print (twodecimals)
+		print (i , ',', twodecimals)
+		print (np.linalg.norm(v2 - v1) )
 		print (optimalAction)
+		return optimalAction
 
 
 def main():
@@ -59,11 +60,13 @@ def main():
 		P[df.at[i, 'idstatefrom'], df.at[i,'idstateto'], df.at[i,'idaction']] = df.at[i,'probability']
 		R[df.at[i, 'idstatefrom'], df.at[i,'idstateto'], df.at[i,'idaction']] = df.at[i,'reward']
 	
-	valueIteration(states, actions, P, R, gamma)
+	optimalAction = valueIteration(states, actions, P, R, gamma)
 
 
-	# print (df.head())
-	df.to_csv('out.csv')
+	df_out = pd.DataFrame(data={'idstate': np.array(list(states))\
+		,'idaction': optimalAction}, columns=['idstate', 'idaction'])
+	print (df_out.head())
+	df_out.to_csv('out.csv')
 
 
 if __name__ == "__main__": main()
