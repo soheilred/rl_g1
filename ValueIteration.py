@@ -1,7 +1,7 @@
 # @Author: soheil
 # @Date:   2018-09-11 11:47:34
-# @Last Modified by:   soheil
-# @Last Modified time: 2018-09-12 09:45:40
+# @Last Modified by:   soheilred
+# @Last Modified time: 2018-09-12 10:00:22
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
@@ -11,28 +11,29 @@ import sys, os
 
 
 def valueIteration(S, A, P, R, gamma):
-	V = [np.zeros([len(S)])]
+	v2 = np.zeros([len(S)])
+	v1 = np.zeros([len(S)])
+	V = v1
 	i = 0
 	eps = 0.0001
-	while (i is 0) or (np.linalg.norm(V[i] - V[i-1]) > eps):
-		v = V[i]
+	while (i is 0) or (np.linalg.norm(v2 - v1) > eps):
+		v1 = v2
 		for s in S:
 			Q = np.zeros(len(A))
 			for a in A:
 				Q[a] = 0
 				for sp in S:
-					Q[a] = Q[a] + P[s, sp, a] * ( R[s, sp, a] + gamma*v[sp] )
+					Q[a] = Q[a] + P[s, sp, a] * ( R[s, sp, a] + gamma*v1[sp] )
 				print 'Q[a =',a ,',s =', s,'] =',Q[a]
-			v[s] = np.max(Q)
-		V.append(v)
-		i = i + 1
+			v2[s] = np.max(Q)
 
+		np.concatenate((V, v2), axis=0)
 		# twodecimals = ["%.2f" % var for var in V[len(V) - 1]]
 		# print (twodecimals)
-		print (V[i])
-		print (V[i-1])
-		print (np.linalg.norm(V[i] - V[i-1]))
-
+		print (v2)
+		print (np.linalg.norm(v2 - v1))
+		i = 1
+	print (V)
 def main():
 	# try:
 	#     fileName = sys.argv[1]
