@@ -1,7 +1,7 @@
 # @Author: soheil
 # @Date:   2018-09-11 11:47:34
 # @Last Modified by:   soheil
-# @Last Modified time: 2018-09-11 13:53:44
+# @Last Modified time: 2018-09-12 09:45:40
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
@@ -11,44 +11,56 @@ import sys, os
 
 
 def valueIteration(S, A, P, R, gamma):
-    pass
+	V = [np.zeros([len(S)])]
+	i = 0
+	eps = 0.0001
+	while (i is 0) or (np.linalg.norm(V[i] - V[i-1]) > eps):
+		v = V[i]
+		for s in S:
+			Q = np.zeros(len(A))
+			for a in A:
+				Q[a] = 0
+				for sp in S:
+					Q[a] = Q[a] + P[s, sp, a] * ( R[s, sp, a] + gamma*v[sp] )
+				print 'Q[a =',a ,',s =', s,'] =',Q[a]
+			v[s] = np.max(Q)
+		V.append(v)
+		i = i + 1
+
+		# twodecimals = ["%.2f" % var for var in V[len(V) - 1]]
+		# print (twodecimals)
+		print (V[i])
+		print (V[i-1])
+		print (np.linalg.norm(V[i] - V[i-1]))
 
 def main():
-    # try:
-    #     fileName = sys.argv[1]
-    # except:
-    #     fileName = input("Enter Filename: ")
-    fileName = 'input.csv'
-    df = pd.read_csv(fileName)
-    gamma = 0.9
-    actions = set()
-    states = set()
-    for i in range(df.shape[0]):
-    	states.add(df.at[i,'idstatefrom'])
-    	states.add(df.at[i,'idstateto'])
-    	actions.add(df.at[i,'idaction'])
+	# try:
+	#     fileName = sys.argv[1]
+	# except:
+	#     fileName = input("Enter Filename: ")
+	fileName = 'input1.csv'
+	df = pd.read_csv(fileName)
+	gamma = 0.9
+	actions = set()
+	states = set()
+	for i in range(df.shape[0]):
+		states.add(df.at[i,'idstatefrom'])
+		states.add(df.at[i,'idstateto'])
+		actions.add(df.at[i,'idaction'])
 
-    P = np.empty([len(states), len(states), len(actions)])
-    R = np.empty([len(states), len(states), len(actions)])
-    # print(P.shape)
+	P = np.empty([len(states), len(states), len(actions)])
+	R = np.empty([len(states), len(states), len(actions)])
+	# print(P.shape)
 
-    for i in range(df.shape[0]):
-    	P[df.at[i, 'idstatefrom'], df.at[i,'idstateto'], df.at[i,'idaction']] = df.at[i,'probability']
-    	R[df.at[i, 'idstatefrom'], df.at[i,'idstateto'], df.at[i,'idaction']] = df.at[i,'reward']
-    
-    v = np.zeros([len(states)])
-    for s in states:
-		Q = np.zeros(len(actions))
-		for a in actions:
-			Q[a] = 0
-			for sp in states:
-				Q[a] = Q[a] + P[s, sp, a] * ( R[s, sp, a] + gamma*v[sp] )
-		v[s] = np.max(Q)
-    
-    print (v)
+	for i in range(df.shape[0]):
+		P[df.at[i, 'idstatefrom'], df.at[i,'idstateto'], df.at[i,'idaction']] = df.at[i,'probability']
+		R[df.at[i, 'idstatefrom'], df.at[i,'idstateto'], df.at[i,'idaction']] = df.at[i,'reward']
+	
+	valueIteration(states, actions, P, R, gamma)
 
-    # print (df.head())
-    df.to_csv('out.csv')
+
+	# print (df.head())
+	df.to_csv('out.csv')
 
 
 if __name__ == "__main__": main()
