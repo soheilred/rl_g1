@@ -1,7 +1,7 @@
 # @Author: soheil
 # @Date:   2018-09-11 11:47:34
 # @Last Modified by:   soheilred
-# @Last Modified time: 2018-09-12 10:23:40
+# @Last Modified time: 2018-09-12 10:52:32
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
@@ -16,7 +16,7 @@ def valueIteration(S, A, P, R, gamma):
 	i = 0
 	eps = 0.01
 	while (i is 0) or (np.linalg.norm(v2 - v1) > eps):
-		i = i + 1
+		i =  1
 		v1 = np.copy(v2)
 		for s in S:
 			Q = np.zeros(len(A))
