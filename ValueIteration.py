@@ -13,6 +13,7 @@ import sys, os
 def valueIteration(S, A, P, R, gamma):
 	v2 = np.zeros([len(S)])
 	v1 = np.zeros([len(S)])
+	optimalAction = np.zeros([len(S)])
 	i = 0
 	eps = 0.01
 	while (i is 0) or (np.linalg.norm(v2 - v1) > eps):
@@ -24,13 +25,15 @@ def valueIteration(S, A, P, R, gamma):
 				Q[a] = 0
 				for sp in S:
 					Q[a] = Q[a] + P[s, sp, a] * ( R[s, sp, a] + gamma*v1[sp] )
-				print 'Q[a =',a ,',s =', s,'] =',Q[a]
+				print ('Q[a =',a ,',s =', s,'] =',Q[a])
 			v2[s] = np.max(Q)
+			optimalAction[s] = np.argmax(Q)
 		
 		# twodecimals = ["%.2f" % var for var in V[len(V) - 1]]
 		# print (twodecimals)
-		print i , ',', v2
+		print (i , ',', v2)
 		print (np.linalg.norm(v2 - v1))
+		print (optimalAction)
 
 
 def main():
