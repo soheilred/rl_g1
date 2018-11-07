@@ -21,7 +21,7 @@ class MDP(object):
 		self.v0 = None
 		self.gamma = 0.9
 		self.samples = []
-		self.n_episode = 10
+		self.n_episode = 50
 
 	def sampleGenerator(self, state, samples):
 		# np.random.seed(89)
@@ -90,41 +90,41 @@ class MDP(object):
 		
 	def samplesToCSV(self, n):
 		import csv
-		# print self.samples
+		# print (self.samples)
 		sample_out = list(self.samples)
 		sample_out.insert(0,["idstatefrom", "idaction", "idstateto","reward"])
 		sampleFile = "./samples/sampleSet_" + str(n) +".csv"
-		with open(sampleFile, "wb") as f:
+		with open(sampleFile, "w") as f:
 			writer = csv.writer(f)
 			writer.writerows(sample_out)
 
-	def csvToSamples(self):
-		import csv
+	# def csvToSamples(self):
+	# 	import csv
 
 			
 	def lstd(self):
 		m = 2 # number of features
+		A = np.zeros([m,m])
+		b = np.zeros([m,1])
+		# phi_k0 = np.zeros([m,1])
+		# phi_k1 = np.zeros([m,1])
 		for i in range(self.n_episode):
 			self.makeSamples(i)
-			A = np.zeros([m,m])
-			b = np.zeros([m,1])
-			# phi_k0 = np.zeros([m,1])
-			# phi_k1 = np.zeros([m,1])
 			for sample in self.samples:
 				phi_k0 = self.phi(sample[0])
 				phi_k1 = self.phi(sample[2])
-				A = A + np.dot(phi_k0, np.transpose(phi_k0 - self.gamma*phi_k1))
-				b = b + phi_k0*sample[3]
-				# print "phi_k0 " , phi_k0.shape , "b shape " , b.shape
-				# print "A " , A , "\nb " , b
+				A += np.dot(phi_k0, np.transpose(phi_k0 - self.gamma*phi_k1))
+				b += phi_k0*sample[3]
+				# print ("phi_k0 " , phi_k0.shape , "b shape " , b.shape)
+				# print ("A " , A , "\nb " , b)
 			t = float(len(self.samples))
 			try:
 				A_inverse = np.linalg.inv(A)
-				# print "A^-1 = " , A_inverse
-				print "theta_t = ", np.dot((1.0/t)*A_inverse, (1.0/t)*b)
+				# print ("A^-1 = " , A_inverse)
+				print ("theta_t = ", np.transpose(np.dot(t*A_inverse, (1.0/t)*b)))
 			except np.linalg.LinAlgError:
 				# Not invertible. Skip this one.
-				print "ERROR, A is not invertible"
+				print ("ERROR, A is not invertible")
 				pass
 
 
@@ -155,10 +155,10 @@ class MDP(object):
 			self.P[df.at[i, 'idstatefrom'], df.at[i,'idstateto'], df.at[i,'idaction']] = df.at[i,'probability']
 			self.R[df.at[i, 'idstatefrom'], df.at[i,'idstateto'], df.at[i,'idaction']] = df.at[i,'reward']
 		
-		print "states shape: " , len(self.states)
-		print "actions shape: " ,len(self.actions)
-		print "P shape: " , self.P.shape
-		print "R shape: " , self.R.shape
+		print ("states shape: " , len(self.states))
+		print ("actions shape: " ,len(self.actions))
+		print ("P shape: " , self.P.shape)
+		print ("R shape: " , self.R.shape)
 
 
 
@@ -177,20 +177,20 @@ class MDP(object):
 				Q = np.zeros(len(self.actions))
 				for a in self.actions:
 					Q[a] = sum(self.P[s,:, a] * ( self.R[s,:, a] + self.gamma*v1[:] ))
-					# print ('Q[a =',a ,',s =', s,'] =',"%.2f" % Q[a])
+					# print (('Q[a =',a ,',s =', s,'] =',"%.2f" % Q[a]))
 				v2[s] = np.max(Q)
 				optimalAction[s] = np.argmax(Q)
 			
 			# twodecimals = ["%.2f" % var for var in v2]
-			# print (twodecimals)
-			# print (i , '->', twodecimals)
-			# print (np.linalg.norm(v2 - v1) )
-			# print (optimalAction)
+			# print ((twodecimals))
+			# print ((i , '->', twodecimals))
+			# print ((np.linalg.norm(v2 - v1) ))
+			# print ((optimalAction))
 			# elapsed_time = time.time() - start_time
-			# print "loop time: %.5f" % elapsed_time
+			# print ("loop time: %.5f" % elapsed_time)
 
 		elapsed_time = time.time() - start_time
-		print "elapsed time: %.5f" % elapsed_time
+		print ("elapsed time: %.5f" % elapsed_time)
 		return optimalAction
 
 
@@ -203,7 +203,7 @@ def main():
 	# optimalAction = mdp.valueIteration()
 	# df_out = pd.DataFrame(data={'idstate': np.array(list(mdp.states))\
 	# 	,'idaction': optimalAction}, columns=['idstate', 'idaction'])
-	# print (df_out.head())
+	# print ((df_out.head()))
 	# df_out.to_csv('out.csv')
 	mdp.lstd()
 
